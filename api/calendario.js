@@ -6,6 +6,13 @@ export default async function handler(req, res) {
     const response = await fetch(url);
     const text = await response.text();
     res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // Si se pasa ?debug=1, devuelve el primer evento en crudo
+    if (req.query.debug === '1') {
+      const block = text.split('BEGIN:VEVENT')[1]?.split('END:VEVENT')[0] || 'No hay eventos';
+      return res.status(200).send('<pre>' + block + '</pre>');
+    }
+
     res.setHeader('Content-Type', 'text/calendar');
     res.status(200).send(text);
   } catch (e) {
